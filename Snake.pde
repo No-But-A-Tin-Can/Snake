@@ -94,6 +94,6 @@ void keyPressed () {
   our snake.
   */
   println("Key pressed is: " + key);
-  int newdir = key == 's' ? 0 : (key == 'w' ? 1 : (key == 'd' ? 2 : (key == 'a' ? 3 : -1)));
+  int newdir = (key == 's' || keyCode == DOWN) ? 0 : ((key == 'w' || keyCode == UP) ? 1 : ((key == 'd' || keyCode == RIGHT) ? 2 : ((key == 'a' || keyCode == LEFT) ? 3 : -1)));
   if (newdir != -1) dir = newdir;
 }
