@@ -85,9 +85,10 @@ void draw () {
 }
 void keyPressed () {
   /*
-  The "a" key starts the snake going left, "d" sends it right, "w" sends it up 
-  and "s" sends it down.  The way to remember which is which is by their position
-  on the qwerty keyboard.
+  The "a" or "left arrow" key starts the snake going left, "d" or "right arrow" sends it right, 
+  "w" or "up arrow" sends it up, and "s" or "down arrow" sends it down.  The way to remember 
+  which is which is by their position on the qwerty keyboard or, if using the arrow keys, 
+  the direction of the arrows.
   
   The dir variable is the index into the dx and dy vectors that we use when we add
   a new set of x,y coordinates to the front of the arraylist of points that represents
