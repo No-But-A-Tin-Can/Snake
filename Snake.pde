@@ -238,5 +238,28 @@ void keyPressed () {
   */
   println("Key pressed is: " + key);
   int newdir = (key == 's' || keyCode == DOWN) ? 0 : ((key == 'w' || keyCode == UP) ? 1 : ((key == 'd' || keyCode == RIGHT) ? 2 : ((key == 'a' || keyCode == LEFT) ? 3 : -1)));
+  if(x.size() > 1)
+  {
+    if(newdir == 0 && dir == 1)
+    {
+      newdir = -1;
+    }
+    
+    if(newdir == 1 && dir == 0)
+    {
+      newdir = -1;
+    }
+    
+    if(newdir == 2 && dir == 3)
+    {
+      newdir = -1;
+    }
+    
+    if(newdir == 3 && dir == 2)
+    {
+      newdir = -1;
+    }
+    
+  }
   if (newdir != -1) dir = newdir;
 }
