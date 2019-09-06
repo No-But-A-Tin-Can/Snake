@@ -3,6 +3,19 @@
 //when it does not hit the apple).
 ArrayList<Integer> x = new ArrayList <Integer>();
 ArrayList<Integer> y = new ArrayList <Integer>();
+
+//array list of mines
+ArrayList<Integer> mineX = new ArrayList <Integer>();
+ArrayList<Integer> mineY = new ArrayList <Integer>();
+
+//random coordinates for mines
+int randomNumberMineX;
+int randomNumberMineY;
+
+//random coordinates for apple
+int randomTempNumberAppleX;
+int randomTempNumberAppleY;
+
 //Note that height and width are variables provided by the Processing environment
 //so we don't want to override them in our code, hence w and h for variable names.
 int w = 30;              //Width of the board
@@ -21,6 +34,13 @@ int dir = 2;             //The next direction to take
 int applex = 12;
 int appley = 10;
 boolean gameover = false;      //flag to show whether game is done or not.
+boolean headCrossed = false;   //flag to show if the head crossed itself
+boolean mineOverlapsMine = false;
+boolean mineOverlapsApple = false;
+boolean mineOverlapsSnake = false;
+boolean validMineLocation = false; //flag to show if a mine location is allowed
+boolean validAppleLocation = false;
+
 int [] colors = {#266C1B, #E89E25, #2D3FDE, #C10A35, #EBF018};
 final int initialFrameRate = 10;
 void setup () {
@@ -49,6 +69,13 @@ void draw () {
     //draw the apple
     fill(255, 0, 0);
     rect(applex * bs, appley * bs, bs, bs);
+    
+    //draw the mines
+    for(int i = 0; i < mineX.size(); i++)
+    {
+      fill(0, 0, 0);
+      rect(mineX.get(i) * bs, mineY.get(i) * bs, bs, bs);
+    }
   }    
   if (!gameover) {
     if (frameCount % 5 == 0) {
@@ -58,10 +85,112 @@ void draw () {
       if (x.get(0) < 0 || y.get(0) < 0 || x.get(0) >= w || y.get(0) >= h) {
         gameover = true;
       }
+      //check if the head is at the same location as any other part of the snake
+      for(int i = 1; i < x.size(); i++)
+      {
+        if(x.get(0) == x.get(i) && y.get(0) == y.get(i))
+        {
+          headCrossed = true;
+        }
+      }
+      
+      if(headCrossed)
+      {
+        gameover = true;
+      }
       //See if we've hit the apple
       if(x.get(0) == applex && y.get(0) == appley) {
-        applex = (int) random(0, w);      //Reposition the apple
-        appley = (int) random(0, h);      //Don't make the snake shorter
+        
+        while(!validAppleLocation)
+        {
+          randomTempNumberAppleX = (int) random(0, w);
+          randomTempNumberAppleY = (int) random(0, h);
+          
+          //check if the temp apple coordinates overlap with an existing mine coordinate
+          for(int i = 0; i < mineX.size(); i++)
+          {
+            if(randomTempNumberAppleX == mineX.get(i) && randomTempNumberAppleY == mineY.get(i))
+            {
+              validAppleLocation = false;
+              break;
+            }
+            else
+            {
+              validAppleLocation = true;
+            }
+          }
+          
+          //case where there are no mines
+          if(mineX.size() == 0)
+          {
+            validAppleLocation = true;
+          }
+        }
+        applex = randomTempNumberAppleX;      //Reposition the apple
+        appley = randomTempNumberAppleY;      //Don't make the snake shorter
+        
+        validAppleLocation = false;
+        
+        while(!validMineLocation)
+        {
+          //since we hit an apple make a mine at a random location. get a random number
+          randomNumberMineX = (int) random(0, w);
+          randomNumberMineY = (int) random(0, h);
+          //need to check if a mine already exists at a location, check apple and snake location
+          //check the mine locations
+          for(int i = 0; i < mineX.size(); i++)
+          {
+            if(randomNumberMineX == mineX.get(i) && randomNumberMineY == mineY.get(i))
+            {
+              mineOverlapsMine = true;
+              break;
+            }
+            else
+            {
+              mineOverlapsMine = false;
+            }
+          }
+          
+          //check apple
+          if(randomNumberMineX == applex && randomNumberMineY == appley)
+          {
+            mineOverlapsApple = true;
+          }
+          else
+          {
+            mineOverlapsApple = false;
+          }
+          
+          //check snake
+          for(int i = 0; i < x.size(); i++)
+          {
+            if(randomNumberMineX == x.get(i) && randomNumberMineY == y.get(i))
+            {
+              mineOverlapsSnake = true;
+              break;
+            }
+            else
+            {
+              mineOverlapsSnake = false;
+            }
+          }
+          
+          if(mineOverlapsMine || mineOverlapsApple || mineOverlapsSnake)
+          {
+            validMineLocation = false;
+          }
+          else
+          {
+            validMineLocation = true;
+          }
+        
+        }
+        mineX.add(randomNumberMineX);
+        mineY.add(randomNumberMineY);
+        
+        validMineLocation = false;
+      
+
         frameRate(frameRate + frameRate / 10);
       } else {                      //Trim off the last element in the snake
         x.remove(x.size() - 1);
@@ -77,9 +206,12 @@ void draw () {
       frameRate(initialFrameRate);      //start over with the speed of the game
       x.clear();
       y.clear();
+      mineX.clear();
+      mineY.clear();
       x.add(5);
       y.add(5);
       gameover = false;
+      headCrossed = false;
     }
   }
 }
@@ -94,6 +226,6 @@ void keyPressed () {
   our snake.
   */
   println("Key pressed is: " + key);
-  int newdir = key == 's' ? 0 : (key == 'w' ? 1 : (key == 'd' ? 2 : (key == 'a' ? 3 : -1)));
+  int newdir = (key == 's' || keyCode == DOWN) ? 0 : ((key == 'w' || keyCode == UP) ? 1 : ((key == 'd' || keyCode == RIGHT) ? 2 : ((key == 'a' || keyCode == LEFT) ? 3 : -1)));
   if (newdir != -1) dir = newdir;
 }
