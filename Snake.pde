@@ -35,6 +35,7 @@ int applex = 12;
 int appley = 10;
 boolean gameover = false;      //flag to show whether game is done or not.
 boolean headCrossed = false;   //flag to show if the head crossed itself
+boolean mineHit = false;
 boolean mineOverlapsMine = false;
 boolean mineOverlapsApple = false;
 boolean mineOverlapsSnake = false;
@@ -94,7 +95,16 @@ void draw () {
         }
       }
       
-      if(headCrossed)
+      //check if head is at the same location as any mine
+      for(int i = 0; i < mineX.size(); i++)
+      {
+        if(x.get(0) == mineX.get(i) && y.get(0) == mineY.get(i))
+        {
+          mineHit = true;
+        }
+      }
+      
+      if(headCrossed || mineHit)
       {
         gameover = true;
       }
@@ -212,6 +222,7 @@ void draw () {
       y.add(5);
       gameover = false;
       headCrossed = false;
+      mineHit = false;
     }
   }
 }
